@@ -25,7 +25,7 @@ MESSAGE = "Hello, nearest container!"
 rtts = [measure_rtt(ip, PORT) for ip in CLUSTER_B_IPS]
 NEAREST_NODE_IP = min(rtts, key=lambda x: x[1])[0]
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.sendto(MESSAGE.encode(), (NEAREST_NODE_IP, PORT))
 print(f"Sent anycast message to {NEAREST_NODE_IP}: {MESSAGE}")
 sock.close()

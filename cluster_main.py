@@ -11,6 +11,7 @@ CLUSTER_B_MASTER_IP = "192.168.100.10"
 INTRA_PORT = 5004
 INTER_PORT = 5003
 
+
 def log_communication(comm_type, source_cluster, dest_cluster, source_ip, dest_ip, protocol, length, flags):
     with open('network_log.csv', 'a', newline='') as file:
         writer = csv.writer(file)
@@ -31,7 +32,7 @@ def broadcast_message(message):
     """Broadcast to all nodes in Cluster A"""
     for last_octet in range(3, 10):
         dest_ip = f"192.168.100.{last_octet}"
-        send_udp(dest_ip, INTRA_PORT, message)
+        send_tcp(dest_ip, INTRA_PORT, message)
         log_communication(
             "Intra-Broadcast",
             "Cluster A",
@@ -49,7 +50,7 @@ def multicast_message(message, group):
     for node_id in group:
         if 2 <= node_id <= 9:  # Cluster A range
             dest_ip = f"192.168.100.{node_id}"
-            send_udp(dest_ip, INTRA_PORT, message)
+            send_tcp(dest_ip, INTRA_PORT, message)
             log_communication(
                 "Intra-Multicast",
                 "Cluster A",
@@ -64,7 +65,7 @@ def multicast_message(message, group):
 
 def forward_to_cluster_b(message, target_ip):
     """Forward message to Cluster B master"""
-    send_udp(CLUSTER_B_MASTER_IP, INTER_PORT, f"{target_ip}:{message}")
+    send_tcp(CLUSTER_B_MASTER_IP, INTER_PORT, f"{target_ip}:{message}")
     log_communication(
         "Inter-Cluster",
         "Cluster A",
@@ -77,15 +78,18 @@ def forward_to_cluster_b(message, target_ip):
     )
     print(f"Forwarded to Cluster B: {message}")
 
-def send_udp(ip, port, message):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+def send_tcp(ip, port, message):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind(("0.0.0.0", INTER_PORT))
+
+
     sock.sendto(message.encode(), (ip, port))
     sock.close()
 
 
 def start_listener():
     print(f"Cluster A Master listening on {CLUSTER_A_MASTER_IP}:{INTER_PORT}")
-    sock = socket.socket(socket.AF_INET ,socket.SOCK_DGRAM)
+    sock = socket.socket(socket.AF_INET ,socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET ,socket.SO_REUSEADDR ,1)
     sock.setsockopt(socket.SOL_SOCKET ,socket.SO_REUSEPORT ,1)
 

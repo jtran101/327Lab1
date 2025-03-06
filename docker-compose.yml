@@ -1,183 +1,218 @@
-version: '3'
 services:
   # Cluster A Containers
-  clusterA_master:
-    container_name: clusterA_master
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.2
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 cluster_main.py"
-
-  clusterA_node1:
-    container_name: clusterA_node1
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.3
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  clusterA_node2:
-    container_name: clusterA_node2
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.4
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  clusterA_node3:
-    container_name: clusterA_node3
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.5
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  clusterA_node4:
-    container_name: clusterA_node4
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.6
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  clusterA_node5:
-    container_name: clusterA_node5
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.7
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  clusterA_node6:
-    container_name: clusterA_node6
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.8
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  clusterA_node7:
-    container_name: clusterA_node7
-    image: alpine
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.9
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
-  # Cluster B Containers
   clusterB_master:
     container_name: clusterB_master
-    image: alpine
+    image: my-python-app
     networks:
       distributed_network:
         ipv4_address: 192.168.100.10
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 send-inter-cluster.py"
+    command: python3 -u cluster_b_master.py
+  clusterA_master:
+    container_name: clusterA_master
+    image: my-python-app
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.2
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u cluster_a_master.py
+
+  clusterA_node1:
+    container_name: clusterA_node1
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.3
+    labels:
+      group: 'JS'
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  clusterA_node2:
+    container_name: clusterA_node2
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.4
+    labels:
+      group: 'JS'
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  clusterA_node3:
+    container_name: clusterA_node3
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.5
+    labels:
+      group: 'JS'
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  clusterA_node4:
+    container_name: clusterA_node4
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.6
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  clusterA_node5:
+    container_name: clusterA_node5
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.7
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  clusterA_node6:
+    container_name: clusterA_node6
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.8
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  clusterA_node7:
+    container_name: clusterA_node7
+    image: my-python-app
+    depends_on:
+      - clusterA_master
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.9
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: python3 -u inter-cluster.py
+
+  # Cluster B Containers
 
   clusterB_node1:
     container_name: clusterB_node1
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.11
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
+    command: python3 -u inter-cluster.py
 
   clusterB_node2:
     container_name: clusterB_node2
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.12
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
+    command: python3 -u inter-cluster.py
 
   clusterB_node3:
     container_name: clusterB_node3
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.13
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
-
+    command: python3 -u inter-cluster.py
   clusterB_node4:
     container_name: clusterB_node4
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.14
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
+    command: python3 -u inter-cluster.py
 
   clusterB_node5:
     container_name: clusterB_node5
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.15
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
+    command: python3 -u inter-cluster.py
 
   clusterB_node6:
     container_name: clusterB_node6
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.16
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
+    command: python3 -u inter-cluster.py
 
   clusterB_node7:
     container_name: clusterB_node7
-    image: alpine
+    image: my-python-app
+    depends_on:
+      - clusterB_master
     networks:
       distributed_network:
         ipv4_address: 192.168.100.17
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "apk add --no-cache python3 tcpdump && python3 inter-cluster.py"
+    command: python3 -u inter-cluster.py
 
 networks:
   distributed_network:
-    external: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24

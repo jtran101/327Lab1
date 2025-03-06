@@ -1,8 +1,1 @@
 Type,Time (s),Source Cluster,Destination Cluster,Source IP,Destination IP,Protocol,Length,Flags
-Intra-Broadcast,1740475311.8553226,Cluster A,Cluster A,192.168.100.2,192.168.100.3,UDP,25,0x010
-Intra-Broadcast,1740475311.8559659,Cluster A,Cluster A,192.168.100.2,192.168.100.4,UDP,25,0x010
-Intra-Broadcast,1740475311.8565011,Cluster A,Cluster A,192.168.100.2,192.168.100.5,UDP,25,0x010
-Intra-Broadcast,1740475311.8569460,Cluster A,Cluster A,192.168.100.2,192.168.100.6,UDP,25,0x010
-Intra-Broadcast,1740475311.8574460,Cluster A,Cluster A,192.168.100.2,192.168.100.7,UDP,25,0x010
-Intra-Broadcast,1740475311.8579190,Cluster A,Cluster A,192.168.100.2,192.168.100.8,UDP,25,0x010
-Intra-Broadcast,1740475311.8585856,Cluster A,Cluster A,192.168.100.2,192.168.100.9,UDP,25,0x010
