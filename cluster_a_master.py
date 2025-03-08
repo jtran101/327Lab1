@@ -138,8 +138,7 @@ def send_intra_broadcastmessage(message):
                 break
 
 def send_intra_multicastmessage(message):
-    print('')
-    print('Sending Multicast Message:', flush=True)
+    
     for container_ip in MULTICAST_IPS:
         while True:
             try:
@@ -163,11 +162,14 @@ def main():
     threading.Thread(target=inter_TCPlisten).start()
     threading.Thread(target=inter_UDPlisten).start()
     # threading.Thread(target=intra_listen).start()
+    time.sleep(3)
 
     send_intra_broadcastmessage('Hello, Cluster A Workers')
 
     time.sleep(20)
 
+    print('')
+    print('Sending Intra Multicast Message', flush=True)
     send_intra_multicastmessage('Hello Multicast Group in Cluster A')
 
     time.sleep(20)

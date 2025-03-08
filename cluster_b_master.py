@@ -61,7 +61,7 @@ def intra_listen():
             continue
 
         data = other_socket.recv(1024).decode()
-        print(f"Received on port {INTER_PORT} from {other_ip}: {data}")
+        print(f"Received on port {INTRA_PORT} from {other_ip}: {data}")
         print('')
 
         other_socket.send(f"Message received on port {sock.getsockname()[1]}: \nThe message that got sent was {data}")
@@ -87,8 +87,7 @@ def send_broadcastmessage(message):
 def inter_multicast_message(message):
     # UDP communication
 
-    print('')
-    print('Sending Group JS a message')
+    print('Sending Group JS a message', flush=True)
     while True:
         try:
             sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -110,6 +109,8 @@ def main():
 
     time.sleep(60)
 
+    print('')
+    print('Sending Inter Multicast message')
     inter_multicast_message('Hello Group JS: This is ClusterB Master')
 
     
