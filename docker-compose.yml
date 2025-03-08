@@ -1,5 +1,16 @@
 services:
   # Cluster A Containers
+  clusterA_master:
+    container_name: clusterA_master
+    image: my-python-app
+    networks:
+      distributed_network:
+        ipv4_address: 192.168.100.2
+    volumes:
+      - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /app
+    command: python3 cluster_a_master.py
   clusterB_master:
     container_name: clusterB_master
     image: my-python-app
@@ -10,16 +21,6 @@ services:
       - ./:/app
     working_dir: /app
     command: python3 -u cluster_b_master.py
-  clusterA_master:
-    container_name: clusterA_master
-    image: my-python-app
-    networks:
-      distributed_network:
-        ipv4_address: 192.168.100.2
-    volumes:
-      - ./:/app
-    working_dir: /app
-    command: python3 -u cluster_a_master.py
 
   clusterA_node1:
     container_name: clusterA_node1

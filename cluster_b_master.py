@@ -1,6 +1,7 @@
 import socket
 from datetime import datetime
 import threading
+import time
 
 INTER_PORT = 5003 #between clusters
 INTRA_PORT = 5004 #between containers
@@ -37,8 +38,8 @@ def inter_listen():
         data = other_socket.recv(1024).decode()
         if not data:
             print(f"Received empty message from {other_ip}")
-        print(f"Received on port {INTER_PORT} from {CLUSTER_B_MASTER}: {data}")  
-        print(f'') 
+        print(f"Received TCP message on port {INTER_PORT} from {CLUSTER_B_MASTER}: {data}")  
+        print('') 
         other_socket.close()
         send_broadcastmessage(data)
 
@@ -61,11 +62,13 @@ def intra_listen():
 
         data = other_socket.recv(1024).decode()
         print(f"Received on port {INTER_PORT} from {other_ip}: {data}")
+        print('')
 
         other_socket.send(f"Message received on port {sock.getsockname()[1]}: \nThe message that got sent was {data}")
         other_socket.close()
 
 def send_broadcastmessage(message):
+    # TCP communication
     for container_ip in WORKER_IPS:
         while True:
             try:
@@ -80,8 +83,22 @@ def send_broadcastmessage(message):
                 bsock.sendall(message.encode())
                 bsock.close()
                 break
-            
 
+def inter_multicast_message(message):
+    # UDP communication
+
+    print('')
+    print('Sending Group JS a message')
+    while True:
+        try:
+            sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock2.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock2.connect((OTHER_MASTER_IP,INTER_PORT))
+            sock2.sendall(message.encode())
+        except Exception as e:
+            print(f"Error sending message to clusterA: {e}")
+        finally:
+            sock2.close()
 
 
 
@@ -89,8 +106,11 @@ def main():
     print('Starting Cluster B with 8 containers', flush=True)
     #separate the listening to different ports
     threading.Thread(target=inter_listen).start()
-
     # threading.Thread(target=intra_listen).start()
+
+    time.sleep(60)
+
+    inter_multicast_message('Hello Group JS: This is ClusterB Master')
 
     
 
