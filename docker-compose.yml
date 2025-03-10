@@ -8,9 +8,10 @@ services:
         ipv4_address: 192.168.100.2
     volumes:
       - ./:/app
-      - /var/run/docker.sock:/var/run/docker.sock
+    cap_add:
+      - NET_ADMIN
     working_dir: /app
-    command: python3 cluster_a_master.py
+    command: sh -c "pip install scapy > /dev/null 2>&1 && python3 monitor_network.py && python3 cluster_a_master.py"
   clusterB_master:
     container_name: clusterB_master
     image: my-python-app
@@ -19,8 +20,10 @@ services:
         ipv4_address: 192.168.100.10
     volumes:
       - ./:/app
+    cap_add:
+      - NET_ADMIN
     working_dir: /app
-    command: python3 -u cluster_b_master.py
+    command: sh -c "pip install scapy > /dev/null 2>&1 && python3 monitor_network.py && python3 -u cluster_b_master.py"
 
   clusterA_node1:
     container_name: clusterA_node1

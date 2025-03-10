@@ -72,7 +72,7 @@ def send_broadcastmessage(message):
     for container_ip in WORKER_IPS:
         while True:
             try:
-                bsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                bsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
                 bsock.connect((container_ip, INTRA_PORT))

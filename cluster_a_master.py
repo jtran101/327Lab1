@@ -145,7 +145,7 @@ def send_intra_multicastmessage(message):
                 msock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 msock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-                msock.connect((container_ip, INTRA_PORT))
+                msock.connect((container_ip, MULTICAST_PORT))
             except Exception as e:
                 print(f"Error sending multicast message: {e}")
             finally:
