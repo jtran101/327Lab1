@@ -68,13 +68,12 @@ def intra_listen():
         other_socket.close()
 
 def send_broadcastmessage(message):
-    # UDP communication
+    # TCP communication
     for container_ip in WORKER_IPS:
-        while True:
+            bsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            
             try:
-                bsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                bsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
                 bsock.connect((container_ip, INTRA_PORT))
                 bsock.sendto(message.encode(), (container_ip, INTRA_PORT))
 
@@ -83,9 +82,7 @@ def send_broadcastmessage(message):
             except Exception as e:
                 print(f"Error sending message: {e}")
             finally:
-
                 bsock.close()
-                break
 
 def inter_multicast_message(message):
     # UDP communication

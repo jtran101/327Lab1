@@ -79,51 +79,37 @@ def start_TCPlistener():
     
 
 def start_UDPlistener():
-    sock = socket.socket(socket.AF_INET ,socket.SOCK_DGRAM)
-    sock.setsockopt(socket.SOL_SOCKET ,socket.SO_REUSEADDR ,1)
-    sock.setsockopt(socket.SOL_SOCKET ,socket.SO_REUSEPORT ,1)
-
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP Socket
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     try:
-        sock.bind(("0.0.0.0" ,INTRA_PORT))
-        sock.listen(5)
-
-        hostname = socket.gethostname()
-        container_ip = socket.gethostbyname(hostname)
-
-        if container_ip in CLUSTER_A_CONTAINERS:
-            print(f'Connected to master node at 192.168.100.2:{INTRA_PORT}')
-        elif container_ip in CLUSTER_B_CONTAINERS:
-            print(f'Connected to master node at 192.168.100.10:{INTRA_PORT}')
+        sock.bind(("0.0.0.0", INTRA_PORT))
+        print(f"Listening for UDP messages on port {INTRA_PORT}...")
 
         while True:
             try:
-                client_socket, addr = sock.accept()
+                data, addr = sock.recvfrom(1024)  # Receive UDP message
                 
-                data = client_socket.recv(1024).decode()
-                
-                if addr[0] == CLUSTER_A_MASTER and container_ip in CLUSTER_A_CONTAINERS:
-                    print(f'Received UDP message from ClusterA_master: {data}', flush=True)
-                    
-                elif addr[0] == CLUSTER_B_MASTER and container_ip in CLUSTER_B_CONTAINERS:
-                    print(f'Received UDP message from ClusterB_master: {data}', flush=True)
+                hostname = socket.gethostname()
+                container_ip = socket.gethostbyname(hostname)
 
-                master_container = socket.gethostbyaddr(addr[0])[0]
-                master_container = master_container.split('.')[0]
+                sender_ip = addr[0]
+                received_message = data.decode()
 
-                container_name = get_container_name(container_ip)
+                if sender_ip == CLUSTER_A_MASTER and container_ip in CLUSTER_A_CONTAINERS:
+                    print(f"Received UDP message from ClusterA_master: {received_message}", flush=True)
+                elif sender_ip == CLUSTER_B_MASTER and container_ip in CLUSTER_B_CONTAINERS:
+                    print(f"Received UDP message from ClusterB_master: {received_message}", flush=True)
+                print(f"Received message: {received_message}")
 
-                reply_message = f'Hello {master_container} from: {container_name}'
-
-                client_socket.sendall(reply_message.encode())
-                client_socket.close()
-                
+                reply_message = f"Hello from {container_ip}"
+                sock.sendto(reply_message.encode(), addr)  # Send reply
                 
             except Exception as e:
-                print(f"Error: {e}")
-                break
+                print(f"Error receiving UDP message: {e}")
+
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error setting up UDP listener: {e}")
     
 
 if __name__ == "__main__":
